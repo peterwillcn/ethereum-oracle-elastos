@@ -1,5 +1,6 @@
 var fs = require('fs');
 var path = require("path");
+var Bagpipe = require('bagpipe')
 var filePath = path.resolve('./keystore/');
 var files = [];
 walkSync(filePath, function(file, stat) {
@@ -19,13 +20,31 @@ cdata  = contract.methods.receivePayload("EWRwrmBWpYFwnvAQffcP1vrPCS5sGTgWEB", 2
 
 //wallets = [{"address":"53781e106a2e3378083bdcede1874e5c2a7225f8","crypto":{"cipher":"aes-128-ctr","ciphertext":"bc53c1fcd6e31a6392ddc1777157ae961e636c202ed60fb5dda77244c5c4b6ff","cipherparams":{"iv":"c5d1a7d86d0685aa4542d58c27ae7eb4"},"kdf":"scrypt","kdfparams":{"dklen":32,"n":262144,"p":1,"r":8,"salt":"409429444dabb5664ba1314c93f0e1d7a1e994a307e7b43d3f6cc95850fbfa9f"},"mac":"4c37821c90d35118182c2d4a51356186482662bb945f0fcd33d3836749fe59c0"},"id":"39e7770e-4bc6-42f3-aa6a-c0ae7756b607","version":3}]
 
+let index = 1;
+var bagpipe = new Bagpipe(300);
 for (let wallet of wallets) {
-  acc = web3.eth.accounts.decrypt(wallet, "123");
-  tx = {data: cdata, to: contract.options.address, from: acc.address, gas: "3000000", gasPrice: "20000000000"}
+  console.log("00000", index);
+	acc= web3.eth.accounts.decrypt(wallet, "123");
+	//web3.eth.getBalance(acc.address).then(console.log);
+	bagpipe.push(function (wallet,acc,index) {
+		web3.eth.getTransactionCount(acc.address).then((nonce)=>{
+			console.log("index",index,"nonce",nonce, "address", acc.address);
+			create_tx(wallet,nonce,acc.address,acc);
+
+		});
+	},wallet,acc,index,function(console){console.log(index)});
+index++;
+};
+
+function create_tx(wallet, index, address, acc) {
+	console.log("create_tx",index,"address",address,"acc",acc.address)
+  tx = {data: cdata, to: contract.options.address, from: address, gas: "3000000", gasPrice: "20000000000"}
   tx.value = 200000000000000;
+	tx.nonce=index;
   acc.signTransaction(tx).then((res)=>{
     console.log("coming");
     stx = res;
+    console.log("tx to: ", tx.to);
     console.log(stx.rawTransaction);
     web3.eth.sendSignedTransaction(stx.rawTransaction).then(console.log)
   });

@@ -1,5 +1,4 @@
 "use strict";
-
 const common = require("./common");
 
 module.exports = async function (json_data, res) {
@@ -15,14 +14,14 @@ module.exports = async function (json_data, res) {
                 toBlock: parseInt(blkheight) - 6
             });
         }
+	console.log("blockHeight",blkheight, "logs",logs)
         let result = new Array();
         let txhash = null;
         let txlog = null;
         let txreceipt;
         if (logs != null) {
-            console.log(logs);
             for (const log of logs) {
-
+            console.log("log.address",log.address,"options.address",common.contract.options.address)
                 if (log.address !== common.contract.options.address) {
                     continue;
                 }
