@@ -8,9 +8,9 @@ walkSync(filePath, function(file, stat) {
     files.push(file);
 });
 //console.log(files);
-//console.log(readFileToArr(files))
+//console.log(readAllFileToArr(files))
 
-wallets = readFileToArr(files)
+wallets = readAllFileToArr(files)
 
 Web3 = require("web3");
 web3 = new Web3("http://127.0.0.1:2222");
@@ -22,19 +22,44 @@ var bagpipe = new Bagpipe(300);
 for (let wallet of wallets) {
     console.log("build", index);
     acc = web3.eth.accounts.decrypt(wallet, "123");
-   // web3.eth.getBalance(acc.address).then(console.log);
+    // web3.eth.getBalance(acc.address).then(console.log);
     bagpipe.push(function(acc, index) {
-       fs.appendFile(__dirname + '/wallet.csv', acc.privateKey +","+ acc.address+ "\n", function () {
-              //console.log('ok');
-           });
-	}, acc, function(console) {
+        fs.appendFile(__dirname + '/wallet.csv', acc.privateKey + "," + acc.address + "\n", function() {
+            //console.log('ok');
+        });
+    }, acc, function(console) {
         //console.log(index)
     });
     index++;
-  /*if(index > 2) {
-      break;
-    }*/
+    /*if(index > 2) {
+        break;
+      }*/
 };
+
+// read test
+var arr = readOneFileToArr("/wallet.csv")
+console.log(arr[0][0], arr[0][1])
+console.log(arr[1][0], arr[1][1])
+
+function readOneFileToArr(filePath) {
+    const table = []
+    var rows = new Array();
+    const result = fs.readFileSync(filePath, 'utf-8');
+    rows = result.split("\n");
+    for (var i = 0; i < rows.length; i++) {
+        table.push(rows[i].split(","));
+    }
+    return table;
+}
+
+function readAllFileToArr(fReadNames) {
+    const arr = []
+    for (let item of fReadNames) {
+        const result = fs.readFileSync(item, 'utf-8');
+        arr.push(result);
+    }
+    return arr;
+}
 
 function walkSync(currentDirPath, callback) {
     fs.readdirSync(currentDirPath).forEach(function(name) {
@@ -46,13 +71,4 @@ function walkSync(currentDirPath, callback) {
             walkSync(filePath, callback);
         }
     });
-}
-
-function readFileToArr(fReadNames) {
-    const arr = []
-    for (let item of fReadNames) {
-        const result = fs.readFileSync(item, 'utf-8');
-        arr.push(result);
-    }
-    return arr;
 }
