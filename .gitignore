@@ -5,7 +5,6 @@
 .DS_Store
 *.orig
 *.rej
-*.json
 *.db
 *.dat
 *.txn
@@ -24,4 +23,5 @@ logs
 keystore
 *.out
 *.test
+package-lock.json
 benchmark/process/run-to-height

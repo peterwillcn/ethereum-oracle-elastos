@@ -1,0 +1,14 @@
+{
+  "name": "eth-oracle",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "setup-pm2": "npm install -g pm2 && pm2 install pm2-logrotate",
+    "start:production": "npm run setup-pm2 && pm2 delete all; NODE_ENV=production pm2 start crosschain_oracle.js --node-args='--max-old-space-size=1768' --log-date-format 'DD-MM HH:mm:ss.SSS' --log ./output.log && tail -f /dev/null"
+  },
+  "dependencies": {
+    "express": "^4.16.4",
+    "web3": "^1.3.0",
+    "bagpipe": "0.3.5"
+  }
+}
