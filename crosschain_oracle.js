@@ -10,12 +10,15 @@ const getBlkLogs = require("./getblklogs");
 const getExistTxs = require("./getexisttxs");
 const GetIllegalEvidenceByHeight=require("./getillegalevidencebyheight");
 const CheckIllegalEvidence=require("./checkillegalevidence");
+const Smallcrosschaintransaction=require("./smallcrosschaintransaction");
+const FailedDepositTransactions=require("./faileddeposittransactions");
 
 const app = express();
 
 var bodyParser = require('body-parser');
 app.use(bodyParser.json({limit: '150mb'}));
 
+app.use(express.json());
 
 app.post("/", async function(req, res) {
     try {
@@ -46,9 +49,17 @@ app.post("/", async function(req, res) {
         if (json_data["method"] === "getillegalevidencebyheight") {
             await GetIllegalEvidenceByHeight(json_data, res);
              return;
-    }
+        }
         if (json_data["method"] === "checkillegalevidence") {
             await CheckIllegalEvidence(json_data, res);
+            return;
+        }
+        if (json_data["method"] === "sendsmallcrosstransaction") {
+            await Smallcrosschaintransaction(json_data, res)
+            return;
+        }
+        if (json_data["method"] === "getfaileddeposittransactions") {
+            await FailedDepositTransactions(json_data, res)
             return;
         }
     } catch (err) {
