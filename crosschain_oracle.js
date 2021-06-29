@@ -62,6 +62,14 @@ app.post("/", async function(req, res) {
             await FailedDepositTransactions(json_data, res)
             return;
         }
+        if (json_data["method"] === "getfaileddeposittransactionbyhash") {
+            GetFailedDepositTxByHash(json_data, res)
+            return;
+        }
+        if (json_data["method"] === "sendinvalidwithdrawtransaction") {
+            FailedWithdrawTxByHash(json_data, res)
+            return;
+        }
     } catch (err) {
         common.reterr(err, res);
         return;
