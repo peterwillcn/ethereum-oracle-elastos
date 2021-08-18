@@ -13,9 +13,7 @@ module.exports = async function (json_data, res) {
             if (tx.indexOf("0x") !== 0) {
                 tx = "0x" + txs[i];
             }
-            console.log("tx=======",tx)
             let txprocessed = await common.web3.eth.getStorageAt(common.blackAdr, tx, common.latest)
-            console.log("txprocessed=======",txprocessed)
             if (txprocessed != common.zeroHash64) {
                 list.push(txs[i])
             }
